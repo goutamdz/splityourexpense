@@ -30,7 +30,7 @@ const createUser = async (req: Request, res: Response) => {
         })
     }
     const { name, email, password } = req.body;
-    let passwordHash: string = await bcrypt.hash(password, `${process.env.Salt_round}`);
+    let passwordHash: string = await bcrypt.hash(password, Number(process.env.Salt_round));
 
     const result = await prisma.user.create({
         data: {
