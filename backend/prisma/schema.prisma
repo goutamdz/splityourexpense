@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+model Event {
+  id        Int        @id @default(autoincrement())
+  name      String
+  createdAt DateTime   @default(now())
+
+  users     EventUser[]
+  expenses  Expense[]
+}
+
+
+model User {
+  id           Int        @id @default(autoincrement())
+  name         String
+  email        String     @unique
+  passwordHash String
+  createdAt    DateTime   @default(now())
+
+  events       EventUser[]
+  expenses     Expense[]
+}
+
+
+model EventUser {
+  id      Int   @id @default(autoincrement())
+
+  user    User  @relation(fields: [userId], references: [id])
+  userId  Int
+
+  event   Event @relation(fields: [eventId], references: [id])
+  eventId Int
+
+  @@unique([userId, eventId])
+}
+
+
+model Expense {
+  id        Int      @id @default(autoincrement())
+  amount    Decimal  @db.Decimal(10,2)
+  title     String
+  createdAt DateTime @default(now())
+
+  transactor    User     @relation(fields: [transactorId], references: [id])
+  transactorId  Int
+
+  event     Event    @relation(fields: [eventId], references: [id])
+  eventId   Int
+}
+
