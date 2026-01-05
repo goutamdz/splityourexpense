@@ -40,7 +40,7 @@ const createUser = async (req: Request, res: Response) => {
         }
     })
 
-    const token = jwt.sign({ result }, `${process.env.JWT_SECRET}`);
+    const token = jwt.sign({ id: result.id, email: result.email, name: result.name }, `${process.env.JWT_SECRET}`);
     res.json({ token });
 }
 
