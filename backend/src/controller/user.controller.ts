@@ -26,7 +26,7 @@ const createUser = async (req: Request, res: Response) => {
     if (!zodresult.success) {
         console.log(zodresult.error);   // ZodError instance
         return res.json({
-            "error":zodresult.error
+            "error": zodresult.error
         })
     }
     const { name, email, password } = req.body;
@@ -34,8 +34,8 @@ const createUser = async (req: Request, res: Response) => {
 
     const result = await prisma.user.create({
         data: {
-            name,
-            email,
+            name: name.toLowerCase(),
+            email: email.toLowerCase(),
             passwordHash
         }
     })
@@ -44,4 +44,41 @@ const createUser = async (req: Request, res: Response) => {
     res.json({ token });
 }
 
-export { createUser };
+const getAllusers = async (req: Request, res: Response) => {
+    const users = await prisma.user.findMany();
+    res.json(users);
+}
+
+const searchUser = async (req: Request, res: Response) => {
+    const { text } = req.params;
+
+    if (!text) {
+        return res.status(400).json({ error: "Email parameter is required" });
+    }
+
+    const users = await prisma.user.findMany({
+        where: {
+            OR:[
+                {
+                    email: {
+                        contains: text
+                    }
+                },
+                {
+                    name: {
+                        contains: text
+                    }
+                }
+            ]
+        },
+        select: {
+            id: true,
+            name: true,
+            email: true
+        }
+    })
+    res.json(users);
+}
+
+
+export { createUser, getAllusers, searchUser };
