@@ -28,7 +28,7 @@ const createEvent = async (req: Request, res: Response) => {
     }
     const user = req.user;
     const Event = z.object({
-        name: z.string(),
+        eventname: z.string(),
     });
     let userId: number = Number(user.id);
     let userEmail: string = user.email;
@@ -70,4 +70,52 @@ const createEvent = async (req: Request, res: Response) => {
         res.json({ eventId: event.id });
     })
 }
-export { createEvent };
+
+const getEvents=async(req:Request,res:Response)=>{
+    if(!req.user){
+       return res.json({error:"Unauthorized",})
+    }
+
+    const userId=Number(req.user.id);
+    const events=await prisma.eventUser.findMany({
+        where:{
+            userId:userId
+        },
+        include:{
+            event:true
+        }
+    })
+    res.json(events);
+}
+
+const addUserToEvent=async(req:Request,res:Response)=>{
+    if(!req.user){
+        return res.json({error:"Unauthorized"})
+    }
+    const userId=Number(req.user.id);
+    const eventId=Number(req.params.eventId);
+    const user=await prisma.user.findUnique({
+        where:{
+            id:userId
+        }
+    })
+    if(!user){
+        return res.json({error:"User not found"})
+    }
+    const event=await prisma.event.findUnique({
+        where:{
+            id:eventId
+        }
+    })
+    if(!event){
+        return res.json({error:"Event not found"})
+    }
+    await prisma.eventUser.create({
+        data:{
+            userId:userId,
+            eventId:eventId
+        }
+    })
+    res.json({message:"User added to event"})
+}
+export { createEvent,getEvents,addUserToEvent };

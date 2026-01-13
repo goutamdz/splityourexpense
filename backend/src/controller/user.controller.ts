@@ -50,23 +50,23 @@ const getAllusers = async (req: Request, res: Response) => {
 }
 
 const searchUser = async (req: Request, res: Response) => {
-    const { text } = req.params;
+    const { name } = req.params;
 
-    if (!text) {
-        return res.status(400).json({ error: "Email parameter is required" });
+    if (!name) {
+        return res.status(400).json({ error: "Text parameter is required" });
     }
 
     const users = await prisma.user.findMany({
         where: {
-            OR:[
+            OR: [
                 {
                     email: {
-                        contains: text
+                        contains: name
                     }
                 },
                 {
                     name: {
-                        contains: text
+                        contains: name
                     }
                 }
             ]

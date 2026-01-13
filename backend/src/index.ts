@@ -10,17 +10,17 @@ const PORT = 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/',(req: Request, res: Response) => {
+app.get('/', (req: Request, res: Response) => {
     res.send('Hello World!');
 })
-function consoler(req:Request,res:Response,next:any){
+function consoler(req: Request, res: Response, next: any) {
     console.log('Entering in user Route');
     next();
 }
 
-app.use('/api/v1/user',consoler, userRouter);
-app.use('api/v1/event',eventRouter);
-app.use('api/v1/money',expenseRouter);
+app.use('/api/v1/user', consoler, userRouter);
+app.use('/api/v1/event', eventRouter);
+app.use('/api/v1/money', expenseRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
