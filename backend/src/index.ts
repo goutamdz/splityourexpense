@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from 'express';
+import cors from 'cors';
 import type { Request, Response } from 'express';
 import userRouter from './routes/user.route.js';
 import eventRouter from './routes/event.route.js';
@@ -9,7 +10,7 @@ const PORT = 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.use(cors());
 app.get('/', (req: Request, res: Response) => {
     res.send('Hello World!');
 })
